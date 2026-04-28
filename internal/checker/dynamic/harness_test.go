@@ -172,9 +172,9 @@ func TestFunctionSignature_MultipleTestCases_MixedResults(t *testing.T) {
 	// but Add(0,0)=0==0 (pass because 0-0=0 accidentally matches).
 	dir := newExerciseDir(t, map[string]string{"add.go": additionWrongSrc})
 	cfg := funcSigCfg("Add", "func Add(a, b int) int", []checker.TestCase{
-		{Args: []string{"3", "4"}, ExpectedStdout: "7\n"},   // fail: -1 ≠ 7
-		{Args: []string{"0", "0"}, ExpectedStdout: "0\n"},   // pass: 0-0=0
-		{Args: []string{"5", "3"}, ExpectedStdout: "8\n"},   // fail: 2 ≠ 8
+		{Args: []string{"3", "4"}, ExpectedStdout: "7\n"}, // fail: -1 ≠ 7
+		{Args: []string{"0", "0"}, ExpectedStdout: "0\n"}, // pass: 0-0=0
+		{Args: []string{"5", "3"}, ExpectedStdout: "8\n"}, // fail: 2 ≠ 8
 	})
 
 	results, err := dynamic.New().Run(cfg, dir)

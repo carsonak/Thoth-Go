@@ -1,0 +1,32 @@
+id: 03-fix-loop
+title: "Fix the Off-by-One Loop"
+topic: basics
+mode: bug_fix
+difficulty: 2
+
+# Bug-fix exercises test two things:
+#
+#   1. Structural integrity — the learner must only edit the permitted line(s).
+#      If they rewrite the whole function or touch any other line, the grader
+#      rejects the submission with a clear "wrong line modified" message.
+#
+#   2. Functional correctness — after the fix, the binary must produce the
+#      expected output for every test case.
+#
+# The buggy starter (main.go) has `i <= 3` on line 6. The correct boundary
+# is `i <= 5`. The learner must change ONLY line 6.
+
+bug_fix:
+  submit_file: "main.go"
+  # reference_file points to the correct solution. It lives in a
+  # subdirectory so that `go build .` does not try to compile it alongside
+  # the learner's main.go (both declare package main with a main() function,
+  # which would cause a "multiple main declarations" compile error).
+  reference_file: "solution/main.go"
+  # restricted_lines: only line 6 (the for-loop condition) may be edited.
+  restricted_lines: [6]
+
+test_cases:
+  - description: "prints 1 through 5, one per line"
+    expected_stdout: "1\n2\n3\n4\n5\n"
+    expected_exit_code: 0

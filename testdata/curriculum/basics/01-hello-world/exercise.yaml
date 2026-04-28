@@ -1,0 +1,13 @@
+id: 01-hello-world
+title: "Hello, World!"
+topic: basics
+mode: executable
+difficulty: 1
+
+# No import rules, banned nodes, or required functions for this exercise.
+# The learner must simply print the correct string to stdout.
+
+test_cases:
+  - description: "prints Hello, World! with a trailing newline"
+    expected_stdout: "Hello, World!\n"
+    expected_exit_code: 0

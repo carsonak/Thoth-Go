@@ -1,0 +1,37 @@
+id: 02-addition
+title: "Integer Addition"
+topic: basics
+mode: function_signature
+difficulty: 1
+
+# The learner must implement the Add function in the 'addition' package.
+# There is no main() — this is a library exercise graded via the test harness.
+
+required_functions:
+  - name: Add
+    signature: "func Add(a, b int) int"
+
+# TestCase.Args are Go source expression strings — they are injected directly
+# into the generated harness as: Add(<arg0>, <arg1>).
+# The ExpectedStdout is what fmt.Sprintf("%v\n", Add(a, b)) should produce.
+test_cases:
+  - description: "3 + 4 = 7"
+    args: ["3", "4"]
+    expected_stdout: "7\n"
+    expected_exit_code: 0
+
+  - description: "-1 + 1 = 0"
+    args: ["-1", "1"]
+    expected_stdout: "0\n"
+    expected_exit_code: 0
+
+  - description: "0 + 0 = 0"
+    args: ["0", "0"]
+    expected_stdout: "0\n"
+    expected_exit_code: 0
+
+  - description: "large numbers"
+    args: ["1000000", "2000000"]
+    expected_stdout: "3000000\n"
+    expected_exit_code: 0
+    hidden: true

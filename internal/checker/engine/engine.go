@@ -7,20 +7,20 @@
 // dynamic execution — and as an Orchestrator that decides the order in which
 // those subsystems are invoked.
 //
-//	                   ┌─────────────────────────────────┐
-//	                   │            Engine               │
-//	                   │                                 │
-//	  CLI / tests ────▶│  1. Load exercise.yaml          │
-//	                   │  2. static.Checker.AnalyzeDir   │
-//	                   │     (halt on violation)         │
-//	                   │  3. dynamic.Runner.Run          │
-//	                   │  4. Return CheckResult          │
-//	                   └─────────────────────────────────┘
-//	                          │              │
-//	                   ┌──────┘              └──────┐
-//	                   ▼                            ▼
-//	           static.Checker               dynamic.Runner
-//	        (AST + go/types rules)      (go build + exec)
+//	                 ┌─────────────────────────────────┐
+//	                 │            Engine               │
+//	                 │                                 │
+//	CLI / tests ────▶│  1. Load exercise.yaml          │
+//	                 │  2. static.Checker.AnalyzeDir   │
+//	                 │     (halt on violation)         │
+//	                 │  3. dynamic.Runner.Run          │
+//	                 │  4. Return CheckResult          │
+//	                 └─────────────────────────────────┘
+//	                        │              │
+//	                 ┌──────┘              └──────┐
+//	                 ▼                            ▼
+//	         static.Checker               dynamic.Runner
+//	      (AST + go/types rules)      (go build + exec)
 //
 // # Why a Separate Package?
 //
@@ -29,7 +29,7 @@
 // `internal/checker` (config types). Putting the Engine in the
 // `internal/checker` package would create an import cycle:
 //
-//	  checker → static → checker (CYCLE)
+//	checker → static → checker (CYCLE)
 //
 // A dedicated `engine` sub-package breaks the cycle while keeping the
 // coordinator logic separate from the low-level subsystems — a clean

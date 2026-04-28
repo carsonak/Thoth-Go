@@ -1,16 +1,20 @@
 // Package cli wires together all cobra commands for the thoth-go CLI.
+//
+// # Command Registration Pattern
+//
+// Each subcommand lives in its own file (cmd_check.go, cmd_fetch.go, …).
+// root.go owns only the root cobra.Command and the init() that registers
+// subcommands. This separation follows the Single Responsibility Principle:
+// changing a command's flags or behaviour requires editing exactly one file,
+// not hunting through a monolithic root.go.
 package cli
 
-import (
-	"fmt"
+import "github.com/spf13/cobra"
 
-	"github.com/spf13/cobra"
-)
-
-// version is set at build time via -ldflags.
+// version is set at build time via -ldflags "-X github.com/…/cli.version=v1.2.3".
 var version = "dev"
 
-// rootCmd is the base command when called without any subcommands.
+// rootCmd is the base command invoked when no subcommand is given.
 var rootCmd = &cobra.Command{
 	Use:   "thoth-go",
 	Short: "Thoth-Go — a local CLI autograder for learning Go",
@@ -20,102 +24,25 @@ with instant, config-driven feedback directly in your terminal.`,
 }
 
 // Execute runs the root command and returns any error.
+// main.go calls this; the error is printed and os.Exit(1) is called there.
 func Execute() error {
 	return rootCmd.Execute()
 }
 
 func init() {
+	// ARCHITECTURE NOTE — Registration in init():
+	// Cobra commands are registered in init() rather than inside Execute()
+	// because init() runs once at program startup before any argument parsing.
+	// This keeps Execute() a pure "run" function and makes the command tree
+	// visible to cobra's help / completion machinery before any user input
+	// is processed.
 	rootCmd.AddCommand(
+		newFetchCmd(),
 		newStartCmd(),
 		newCheckCmd(),
 		newSaveCmd(),
 		newLoadCmd(),
-		newFetchCmd(),
 		newResetCmd(),
 		newProgressCmd(),
 	)
-}
-
-// placeholder commands — each will be fully implemented in subsequent phases.
-
-func newStartCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "start <exercise-id>",
-		Short: "Open an exercise in your working directory",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(cmd.OutOrStdout(), "start: %s (not yet implemented)\n", args[0])
-			return nil
-		},
-	}
-}
-
-func newCheckCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "check",
-		Short: "Run static analysis and tests against the current exercise",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(cmd.OutOrStdout(), "check: (not yet implemented)")
-			return nil
-		},
-	}
-}
-
-func newSaveCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "save",
-		Short: "Save a snapshot of your current progress",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(cmd.OutOrStdout(), "save: (not yet implemented)")
-			return nil
-		},
-	}
-}
-
-func newLoadCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "load",
-		Short: "Restore a previously saved snapshot",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(cmd.OutOrStdout(), "load: (not yet implemented)")
-			return nil
-		},
-	}
-}
-
-func newFetchCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "fetch <topic>",
-		Short: "Fetch exercises for a topic from the remote repository",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(cmd.OutOrStdout(), "fetch: %s (not yet implemented)\n", args[0])
-			return nil
-		},
-	}
-	cmd.Flags().BoolP("force", "f", false, "Force re-download even if already cached")
-	return cmd
-}
-
-func newResetCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "reset <exercise-id>",
-		Short: "Reset an exercise to its pristine cached state",
-		Args:  cobra.ExactArgs(1),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintf(cmd.OutOrStdout(), "reset: %s (not yet implemented)\n", args[0])
-			return nil
-		},
-	}
-}
-
-func newProgressCmd() *cobra.Command {
-	return &cobra.Command{
-		Use:   "progress",
-		Short: "Show your overall exercise progress",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			fmt.Fprintln(cmd.OutOrStdout(), "progress: (not yet implemented)")
-			return nil
-		},
-	}
 }

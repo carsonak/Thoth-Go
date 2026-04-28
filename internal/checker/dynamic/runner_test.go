@@ -1,8 +1,8 @@
 package dynamic_test
 
 import (
-	"path/filepath"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 

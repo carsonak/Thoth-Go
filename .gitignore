@@ -1,0 +1,6 @@
+.DS_Store
+*.out
+*.test
+thoth-go
+dist/
+.thoth-go/

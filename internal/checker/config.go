@@ -58,10 +58,15 @@ type FunctionSpec struct {
 
 // BugFixSpec configures the optional bug-fix diff mode.
 type BugFixSpec struct {
+	// SubmitFile is the path (relative to the exercise root) to the file the
+	// learner is expected to edit. Defaults to "main.go" if empty.
+	SubmitFile string `yaml:"submit_file,omitempty"`
 	// ReferenceFile is a path (relative to the exercise root) to the corrected
 	// reference source. Used only in ModeBugFix.
 	ReferenceFile string `yaml:"reference_file"`
-	// RestrictedLines lists 1-based line numbers the learner must not modify.
+	// RestrictedLines lists 1-based line numbers where the learner is allowed
+	// to make changes. Modifications to any line outside this set are treated
+	// as a violation. An empty slice means all lines are freely modifiable.
 	RestrictedLines []int `yaml:"restricted_lines,omitempty"`
 }
 

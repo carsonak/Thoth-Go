@@ -182,30 +182,33 @@ func (r *Runner) Build(dir string) (binPath string, cleanup func(), err error) {
 //     UI handle "wrong answer" and "broken code" as normal cases in their flow,
 //     not as exceptional conditions that unwind the call stack.
 //
-// # Mode dispatch
+// # Mode dispatch (Strategy Pattern)
 //
-//   - ModeExecutable / ModeBugFix: compile → run each test case.
-//   - ModeFunctionSignature: returns a stub result (see comment inside).
+// Each exercise mode maps to a distinct private method (runExecutable,
+// runFunctionSignature, runBugFix). Run is the context that selects a strategy
+// at runtime based on cfg.Mode. Adding a new mode requires only a new method
+// + a new case here — no changes to the Engine or the UI.
 func (r *Runner) Run(cfg *checker.ExerciseConfig, dir string) ([]TestResult, error) {
-	// # Stub / Walking Skeleton for ModeFunctionSignature
-	//
-	// ModeFunctionSignature requires injecting a synthetic test-harness Go file
-	// into the submission directory before compilation — a more complex flow
-	// that will be implemented in a future phase.  Rather than panicking or
-	// silently skipping, we return a clearly labelled stub result so:
-	//
-	//   1. The Engine and CLI work end-to-end (a "walking skeleton").
-	//   2. Static checks still run and can fail correctly.
-	//   3. The learner sees a clear "not yet implemented" message rather than a
-	//      confusing absence of output.
-	if cfg.Mode == checker.ModeFunctionSignature {
-		return []TestResult{{
-			Index:    0,
-			Passed:   false,
-			RunError: "function_signature dynamic execution is not yet implemented; static checks still apply",
-		}}, nil
+	switch cfg.Mode {
+	case checker.ModeFunctionSignature:
+		// harness.go: generates a Go test file, runs `go test -json`, parses output.
+		return r.runFunctionSignature(cfg, dir)
+	case checker.ModeBugFix:
+		// bugfix.go: diffs learner's file against reference before running tests.
+		return r.runBugFix(cfg, dir)
+	default:
+		// ModeExecutable and any future compile-and-run modes.
+		return r.runExecutable(cfg, dir)
 	}
+}
 
+// runExecutable implements the ModeExecutable evaluation strategy:
+// compile the learner's package into a binary, then execute it once per
+// TestCase, capturing stdout and the exit code.
+//
+// Build failures are surfaced as a single TestResult with RunError set rather
+// than returned as errors, so the UI can render the compiler output.
+func (r *Runner) runExecutable(cfg *checker.ExerciseConfig, dir string) ([]TestResult, error) {
 	if len(cfg.TestCases) == 0 {
 		return nil, nil
 	}

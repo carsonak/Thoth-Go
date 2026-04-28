@@ -394,32 +394,29 @@ func TestRun_EmptyTestCases_ReturnsNil(t *testing.T) {
 	}
 }
 
-// ── Run — ModeFunctionSignature stub ─────────────────────────────────────────
+// ── Run — ModeFunctionSignature (no test cases) ───────────────────────────────
 
-func TestRun_ModeFunctionSignature_ReturnsStub(t *testing.T) {
-	// This test documents the current stub behaviour and ensures the Engine
-	// receives a well-formed (if failing) TestResult rather than an error.
+// TestRun_ModeFunctionSignature_NoTestCases documents that function_signature
+// mode with an empty TestCases slice returns nil results (static-only check),
+// consistent with the ModeExecutable behaviour for zero test cases.
+func TestRun_ModeFunctionSignature_NoTestCases(t *testing.T) {
 	dir := newExerciseDir(t, map[string]string{"main.go": helloWorldMain})
 	cfg := &checker.ExerciseConfig{
 		ID:                "func-sig-001",
-		Title:             "Function Sig",
+		Title:             "Function Sig No Cases",
 		Topic:             "basics",
 		Mode:              checker.ModeFunctionSignature,
 		RequiredFunctions: []checker.FunctionSpec{{Name: "Greet", Signature: "func Greet(name string) string"}},
+		// Deliberately no TestCases — the exercise relies on static checks only.
 	}
 
 	results, err := dynamic.New().Run(cfg, dir)
 	if err != nil {
-		t.Fatalf("Run (ModeFunctionSignature): %v", err)
+		t.Fatalf("Run (ModeFunctionSignature, no test cases): %v", err)
 	}
-	if len(results) != 1 {
-		t.Fatalf("len(results) = %d, want 1", len(results))
-	}
-	if results[0].Passed {
-		t.Error("stub must report Passed=false until implementation is complete")
-	}
-	if results[0].RunError == "" {
-		t.Error("stub must set RunError with an explanatory message")
+	// No TestCases → no dynamic checks → nil slice (matches ModeExecutable behaviour).
+	if results != nil {
+		t.Errorf("expected nil results for empty TestCases, got %v", results)
 	}
 }
 

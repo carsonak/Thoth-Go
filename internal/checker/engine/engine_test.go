@@ -239,6 +239,9 @@ func TestEngine_ModeFunctionSignature_MissingFunc(t *testing.T) {
 }
 
 func TestEngine_ModeFunctionSignature_FuncPresent_StaticPasses(t *testing.T) {
+	// funcSigMain declares Greet — static check should pass.
+	// The config has no TestCases, so the dynamic phase returns nil (static-only
+	// exercise) and AllPassed = true.
 	dir := newExerciseDir(t, map[string]string{"main.go": funcSigMain})
 
 	cfg := &checker.ExerciseConfig{
@@ -249,6 +252,7 @@ func TestEngine_ModeFunctionSignature_FuncPresent_StaticPasses(t *testing.T) {
 		RequiredFunctions: []checker.FunctionSpec{
 			{Name: "Greet", Signature: "func Greet(name string) string"},
 		},
+		// No TestCases: the exercise is graded by static checks only.
 	}
 
 	result, err := engine.New(dir).RunWithConfig(cfg)
@@ -258,16 +262,13 @@ func TestEngine_ModeFunctionSignature_FuncPresent_StaticPasses(t *testing.T) {
 	if !result.StaticPassed {
 		t.Errorf("StaticPassed=false; violations: %v", result.StaticViolations)
 	}
-	// Dynamic is the stub — it should report a failing TestResult.
-	if len(result.TestResults) == 0 {
-		t.Error("expected stub TestResult from dynamic phase")
+	// No TestCases → dynamic phase has nothing to do; TestResults is nil.
+	if result.TestResults != nil {
+		t.Errorf("expected nil TestResults for zero-test-case exercise, got %v", result.TestResults)
 	}
-	if result.TestResults[0].Passed {
-		t.Error("stub result should be Passed=false")
-	}
-	// AllPassed is false because the dynamic stub fails.
-	if result.AllPassed {
-		t.Error("AllPassed should be false (dynamic stub is unimplemented)")
+	// AllPassed = StaticPassed && allPassed(nil) = true && true = true.
+	if !result.AllPassed {
+		t.Error("AllPassed should be true: static passed and no test cases to fail")
 	}
 }
 

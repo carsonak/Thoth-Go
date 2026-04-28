@@ -36,7 +36,7 @@ func readFile(t *testing.T, path string) string {
 func TestSaveSnapshot_CreatesFiles(t *testing.T) {
 	tmp := t.TempDir()
 	src := buildFixtureDir(t, filepath.Join(tmp, "src"), map[string]string{
-		"main.go":      "package main\n",
+		"main.go":       "package main\n",
 		"sub/helper.go": "package sub\n",
 	})
 	snapshotRoot := filepath.Join(tmp, "snapshots")
@@ -90,9 +90,9 @@ func TestSaveSnapshot_SkipsGitDir(t *testing.T) {
 	tmp := t.TempDir()
 	src := filepath.Join(tmp, "src")
 	buildFixtureDir(t, src, map[string]string{
-		"main.go":        "package main\n",
-		".git/HEAD":      "ref: refs/heads/main\n",
-		".git/config":    "[core]\n",
+		"main.go":     "package main\n",
+		".git/HEAD":   "ref: refs/heads/main\n",
+		".git/config": "[core]\n",
 	})
 	snapshotRoot := filepath.Join(tmp, "snapshots")
 

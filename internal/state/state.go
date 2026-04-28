@@ -1,3 +1,4 @@
+package state
 // Package state manages the user's progress and snapshots in ~/.thoth-go.
 package state
 

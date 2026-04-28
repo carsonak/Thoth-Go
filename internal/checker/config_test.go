@@ -1,3 +1,4 @@
+package checker
 package checker_test
 
 import (

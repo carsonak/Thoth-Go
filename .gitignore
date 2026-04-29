@@ -2,5 +2,6 @@
 *.out
 *.test
 thoth-go
+!thoth-go/
 dist/
 .thoth-go/
